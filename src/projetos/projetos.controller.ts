@@ -83,6 +83,15 @@ export class ProjetosController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('verifica-limite-participantes/:_id')
+  verificarLimiteParticipantes(
+    @Param('_id') _id: string,
+    @Request() req
+  ) {
+    return this.projetosService.verificarLimiteParticipantes(_id, req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch(':_id')
   update(@Param('_id') _id: string, @Body() updateProjetoDto: UpdateProjetoDto) {
     return this.projetosService.update(_id, updateProjetoDto);

@@ -125,7 +125,7 @@ export class CapitulosService {
     }
   }
 
-  async findCapitulosHistoria(historia) {
+  async findCapitulosHistoria(historia, sort?, ordem?) {
     try {
       let capitulos = await this.capituloModel.find({
         historia: new mongoose.Types.ObjectId(historia)

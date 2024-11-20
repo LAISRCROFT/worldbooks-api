@@ -24,6 +24,7 @@ import { ProjetosModule } from './projetos/projetos.module';
 import { NotificacoesModule } from './notificacoes/notificacoes.module';
 import { ParceirosModule } from './parceiros/parceiros.module';
 import { CompeticaoVotosModule } from './competicao_votos/competicao_votos.module';
+import { WebsocketService } from './websocket/websocket.service';
 
 console.log(`.env.${process.env.NODE_ENV}`)
 @Module({
@@ -32,8 +33,8 @@ console.log(`.env.${process.env.NODE_ENV}`)
       envFilePath: [`.env.${process.env.NODE_ENV}`],
     }),
 
-    // MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`),
-    MongooseModule.forRoot(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DATABASE}`),
+    MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`),
+    // MongooseModule.forRoot(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DATABASE}`),
     UsuariosModule,
     AuthModule,
     StatusModule,
@@ -51,7 +52,7 @@ console.log(`.env.${process.env.NODE_ENV}`)
     ProjetosModule,
     NotificacoesModule,
     ParceirosModule,
-    CompeticaoVotosModule,
+    CompeticaoVotosModule
   ],
   controllers: [AppController],
   providers: [
@@ -59,7 +60,8 @@ console.log(`.env.${process.env.NODE_ENV}`)
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    }
+    },
+    WebsocketService
   ],
 })
 export class AppModule {}

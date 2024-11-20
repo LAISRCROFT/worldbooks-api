@@ -158,21 +158,39 @@ export class NotificacoesService {
     try {
       
       const notificacaoExistente:any = await this.notificacaoModel.findOne({ _id: _id })
+      .populate([ { path: 'projeto' } ]).exec()
       if (!notificacaoExistente) {
         throw new BadRequestException(`Notificação não encontrada`)
       }
 
-      this.logger.verbose(`notificacao: ${notificacaoExistente}`)
+      this.logger.verbose(`notificacao: ${JSON.stringify(notificacaoExistente)}`)
 
-      await this.historiasService.incluirProjeto(notificacaoExistente.historia, notificacaoExistente.projeto)
+      if (!notificacaoExistente.status.equals(new mongoose.Types.ObjectId('67246270d7ee7f7570218e6d'))) {
+        return {
+          code: 6,
+          message: "O projeto não está com as inscrições abertas"
+        }
+      }
+
+      let verificarLimiteParticipantes = await this.projetosService.verificarLimiteParticipantes(notificacaoExistente.projeto._id)
+      console.log(verificarLimiteParticipantes)
+
+      if (verificarLimiteParticipantes) {
+        return {
+          code: 5,
+          message: "Projeto está no limite da quantidade de histórias"
+        }
+      }
+
+      await this.historiasService.incluirProjeto(notificacaoExistente.historia, notificacaoExistente.projeto._id)
 
       if (notificacaoExistente.tipo.equals(new mongoose.Types.ObjectId('6732b726f5941d1308fd4029'))) {
-        let incluirProjeto = await this.usuariosService.incluirProjeto(notificacaoExistente.remetente, notificacaoExistente.projeto)
+        let incluirProjeto = await this.usuariosService.incluirProjeto(notificacaoExistente.remetente, notificacaoExistente.projeto._id)
 
         if (incluirProjeto) {
           let data = {
             historia: notificacaoExistente.historia,
-            projeto: notificacaoExistente.projeto,
+            projeto: notificacaoExistente.projeto._id,
             destinatario: notificacaoExistente.remetente,
             tipo: new mongoose.Types.ObjectId('6733b72911c6cd33882cb282') // Pedido aceito
           }
@@ -181,12 +199,12 @@ export class NotificacoesService {
         }
       } else {
         
-        let incluirProjeto = await this.usuariosService.incluirProjeto(notificacaoExistente.destinatario, notificacaoExistente.projeto)
+        let incluirProjeto = await this.usuariosService.incluirProjeto(notificacaoExistente.destinatario, notificacaoExistente.projeto._id)
 
         if (incluirProjeto) {
           let data = {
             historia: notificacaoExistente.historia,
-            projeto: notificacaoExistente.projeto,
+            projeto: notificacaoExistente.projeto._id,
             destinatario: notificacaoExistente.remetente,
             tipo: new mongoose.Types.ObjectId('6733b71f11c6cd33882cb281') // Convite aceito
           }

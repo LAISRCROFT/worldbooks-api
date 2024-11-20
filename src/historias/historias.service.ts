@@ -77,9 +77,8 @@ export class HistoriasService {
     }
   }
 
-  async findAll(_id, categoria, titulo, publico_alvo, idioma, direitos_autorais, conteudo_adulto, usuario, historia_finalizada, projeto, data, mode, pesquisa, limit, page, user?, sort?) {
+  async findAll(_id, categoria, titulo, publico_alvo, idioma, direitos_autorais, conteudo_adulto, usuario, historia_finalizada, projeto, data, mode, pesquisa, limit, page, user?, sort?, ordem?) {
     try {
-      console.log(sort)
       let query = {                                         // deletado
         status: { $nin: [ new mongoose.Types.ObjectId('672010bdbbbbaf055fa525a0') ] }
       }
@@ -190,12 +189,10 @@ export class HistoriasService {
       }
 
       if (sort) {
-        sort = { [`${sort}`]: 1 }
+        sort = { [`${sort}`]: ordem ? Number(ordem) : 1 }
       } else {
         sort = { createdAt: -1 }
       }
-
-      console.log(sort)
 
       let historias:any = await this.historiaModel.find(query)
       .populate([
@@ -221,6 +218,8 @@ export class HistoriasService {
           ... capitulos
         }
       }
+
+      historias.sort((a, b) => b.total_visualizacoes - a.total_visualizacoes)
 
       return {
         historias: historias,

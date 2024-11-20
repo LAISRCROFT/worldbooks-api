@@ -170,7 +170,7 @@ export class ProjetosService {
         throw new BadRequestException(`Projeto não encontrado`)
       }
 
-      let historias = await this.historiasService.findAll(null, null, null, null, null, null, null, null, null, projetoExistente._id, null, null, null, 20, 0, null, sort)
+      let historias = await this.historiasService.findAll(null, null, null, null, null, null, null, null, null, projetoExistente._id, null, null, null, 30, 0, null, sort)
       
       return {
         ... projetoExistente._doc,
@@ -236,6 +236,38 @@ export class ProjetosService {
     try {
       let projeto = await this.projetoModel.findByIdAndUpdate(_id, updateProjetoDto, {new: true})
       return projeto
+    } catch (error) {
+      this.logger.error(error)
+      return error
+    }
+  }
+
+  async verificarLimiteParticipantes(_id, user?) {
+    try {
+      const projetoExistente:any = await this.projetoModel.findOne({ _id: _id })
+        .populate([
+          { path: 'tipo' },
+          { path: 'status' },
+          { path: 'parceiro' },
+          { path: 'gestor' },
+          { 
+            path: 'ranking',
+            populate: {
+              path: 'historia',
+              populate: {
+                path: 'usuario'
+              }
+            }
+          },
+        ]).exec()
+      if (!projetoExistente) {
+        throw new BadRequestException(`Projeto não encontrado`)
+      }
+
+      let historias = await this.historiasService.findAll(null, null, null, null, null, null, null, null, null, projetoExistente._id, null, null, null, 30, 0, null)
+
+      return historias.count >= projetoExistente.numero_max_participantes
+
     } catch (error) {
       this.logger.error(error)
       return error

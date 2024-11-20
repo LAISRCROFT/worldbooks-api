@@ -45,6 +45,24 @@ export class UsuariosService {
       return this.logger.error(error)
     }
   }
+
+  async alterarSenha(_id, body) {
+    try {
+      const saltOrRounds = 10
+      const hash = await bcrypt.hash(body.password, saltOrRounds)
+      body.password = hash
+      this.logger.log(body)
+  
+      let user = await this.usuariosModel.findByIdAndUpdate(_id, {
+        $set: {
+          password: body.password
+        }
+      }, { new: true })
+      return user
+    } catch (error) {
+      return this.logger.error(error)
+    }
+  }
   
   async findAll(_id, name, email, tipo, projeto, status, data, limit, page, user?) {
     try {
@@ -162,7 +180,8 @@ export class UsuariosService {
         { path: 'tipo' },
         { path: 'projetos' },
         { path: 'status' },
-      ]).exec()
+      ])
+      .select('-password').exec()
       return usuario
     } catch (error) {
       this.logger.error(error)

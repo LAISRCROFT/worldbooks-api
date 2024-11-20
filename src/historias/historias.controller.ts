@@ -61,9 +61,11 @@ export class HistoriasController {
     @Query('pesquisa') pesquisa,
     @Query('limit') limit,
     @Query('page') page,
+    @Query('sort') sort,
+    @Query('ordem') ordem,
     @Query('user') user,
   ) {
-    return this.historiasService.findAll(_id, categoria, titulo, publico_alvo, idioma, direitos_autorais, conteudo_adulto, usuario, historia_finalizada, projeto, data, mode, pesquisa, limit, page, user);
+    return this.historiasService.findAll(_id, categoria, titulo, publico_alvo, idioma, direitos_autorais, conteudo_adulto, usuario, historia_finalizada, projeto, data, mode, pesquisa, limit, page, user, sort, ordem);
   }
 
   @UseGuards(JwtAuthGuard)

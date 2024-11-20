@@ -62,6 +62,12 @@ export class UsuariosController {
   update(@Param('_id') _id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
     return this.usuariosService.update(_id, updateUsuarioDto);
   }
+  
+  @UseGuards(JwtAuthGuard)
+  @Patch('alterar-senha/:_id')
+  alterarSenha(@Param('_id') _id: string, @Body() body) {
+    return this.usuariosService.alterarSenha(_id, body);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':_id')
