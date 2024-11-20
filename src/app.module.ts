@@ -25,14 +25,15 @@ import { NotificacoesModule } from './notificacoes/notificacoes.module';
 import { ParceirosModule } from './parceiros/parceiros.module';
 import { CompeticaoVotosModule } from './competicao_votos/competicao_votos.module';
 
+console.log(`.env.${process.env.NODE_ENV}`)
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: [`.env.development`, `.env.production`],
+      envFilePath: [`.env.${process.env.NODE_ENV}`],
     }),
 
-    MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`),
-    // MongooseModule.forRoot(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DATABASE}`),
+    // MongooseModule.forRoot(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`),
+    MongooseModule.forRoot(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/${process.env.MONGO_DATABASE}`),
     UsuariosModule,
     AuthModule,
     StatusModule,

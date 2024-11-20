@@ -6,6 +6,7 @@ import dotenvFlow = require('dotenv-flow');
 
 async function bootstrap() {
   dotenvFlow.config();
+  
   const app = await NestFactory.create(AppModule, {
     cors: true,
   })
