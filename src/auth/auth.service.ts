@@ -24,7 +24,7 @@ export class AuthService {
     }
  
     async login(usuario: any){
-        
+        console.log(usuario)
         let userExistente:any = await this.usersService.consultarUserEmail(usuario.email)
         if (!userExistente) {
             throw new BadRequestException(`Usuário não localizado`)

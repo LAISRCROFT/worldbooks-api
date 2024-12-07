@@ -52,6 +52,7 @@ export class NotificacoesService {
       }
 
       let create = await this.notificacaoModel.create(notificacao)
+      this.logger.log(JSON.stringify(create))
       return create
       
     } catch (error) {
@@ -156,7 +157,6 @@ export class NotificacoesService {
 
   async aceitarConvite(_id, updateNotificacaoDto:any, user) {
     try {
-      
       const notificacaoExistente:any = await this.notificacaoModel.findOne({ _id: _id })
       .populate([ { path: 'projeto' } ]).exec()
       if (!notificacaoExistente) {
@@ -165,7 +165,7 @@ export class NotificacoesService {
 
       this.logger.verbose(`notificacao: ${JSON.stringify(notificacaoExistente)}`)
 
-      if (!notificacaoExistente.status.equals(new mongoose.Types.ObjectId('67246270d7ee7f7570218e6d'))) {
+      if (!notificacaoExistente?.projeto?.status.equals(new mongoose.Types.ObjectId('67246270d7ee7f7570218e6d'))) {
         return {
           code: 6,
           message: "O projeto não está com as inscrições abertas"
@@ -182,8 +182,11 @@ export class NotificacoesService {
         }
       }
 
-      await this.historiasService.incluirProjeto(notificacaoExistente.historia, notificacaoExistente.projeto._id)
-
+      let incluirProjetoNaHistoria = await this.historiasService.incluirProjeto(notificacaoExistente.historia, notificacaoExistente.projeto._id)
+      if (incluirProjetoNaHistoria.code == 1) {
+        return incluirProjetoNaHistoria
+      }
+      
       if (notificacaoExistente.tipo.equals(new mongoose.Types.ObjectId('6732b726f5941d1308fd4029'))) {
         let incluirProjeto = await this.usuariosService.incluirProjeto(notificacaoExistente.remetente, notificacaoExistente.projeto._id)
 
@@ -201,6 +204,10 @@ export class NotificacoesService {
         
         let incluirProjeto = await this.usuariosService.incluirProjeto(notificacaoExistente.destinatario, notificacaoExistente.projeto._id)
 
+        if (incluirProjeto.code == 1) {
+          return incluirProjeto
+        }
+
         if (incluirProjeto) {
           let data = {
             historia: notificacaoExistente.historia,
@@ -214,6 +221,8 @@ export class NotificacoesService {
       }
 
       await this.projetosService.countNumeroParticipantes(notificacaoExistente.projeto)
+
+      this.logger.log(JSON.stringify(notificacaoExistente))
 
       return notificacaoExistente
     } catch (error) {
