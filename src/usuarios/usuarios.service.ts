@@ -30,7 +30,7 @@ export class UsuariosService {
     if (!createUsuariosDto.email) throw new BadRequestException(`Insira o e-mail!`)
     if (!createUsuariosDto.password) throw new BadRequestException(`Insira a senha!`)
     if (!createUsuariosDto.apelido) throw new BadRequestException(`Insira o apelido!`)
-    if (!createUsuariosDto.data_nascimento) throw new BadRequestException(`Insira a data de nascimento!`)
+    // if (!createUsuariosDto.data_nascimento) throw new BadRequestException(`Insira a data de nascimento!`)
     try {
       const saltOrRounds = 10
       const hash = await bcrypt.hash(createUsuariosDto.password, saltOrRounds)

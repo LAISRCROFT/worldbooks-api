@@ -194,6 +194,8 @@ export class HistoriasService {
         sort = { createdAt: -1 }
       }
 
+      console.log(query)
+
       let historias:any = await this.historiaModel.find(query)
       .populate([
         { path: 'usuario' },
@@ -303,6 +305,8 @@ export class HistoriasService {
         ... historia._doc,
         ... capitulos
       }
+
+      console.log(history._id)
 
       return history
     } catch (error) {
