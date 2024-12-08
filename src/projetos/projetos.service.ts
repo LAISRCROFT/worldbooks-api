@@ -234,7 +234,14 @@ export class ProjetosService {
 
   async update(_id, updateProjetoDto:any) {
     try {
-      let projeto = await this.projetoModel.findByIdAndUpdate(_id, updateProjetoDto, {new: true})
+      const projetoExistente:any = await this.projetoModel.findOne({ _id: _id }).exec()
+      if (!projetoExistente) {
+        throw new BadRequestException(`Projeto não encontrado`)
+      }
+
+      this.logger.log(JSON.stringify(updateProjetoDto))
+
+      let projeto = await this.projetoModel.findByIdAndUpdate(_id, updateProjetoDto, { new: true })
       return projeto
     } catch (error) {
       this.logger.error(error)

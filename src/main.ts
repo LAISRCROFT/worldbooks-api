@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import dotenvFlow = require('dotenv-flow');
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   dotenvFlow.config();
@@ -10,6 +11,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: true,
   })
+
+  app.use(bodyParser.json({ limit: '10mb' })); // Ajuste conforme necessário
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
   const config = new DocumentBuilder()
     .setTitle('WB-back-V2')
     .setDescription('WB-back-V2')
